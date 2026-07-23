@@ -27,7 +27,7 @@ export default function Landing() {
               تسجيل الدخول
             </Button>
 
-            <Button onClick={() => navigate("/login")}>
+            <Button onClick={() => navigate("/register")}>
               <UserPlus className="w-4 h-4 ml-2" />
               إنشاء حساب
             </Button>
