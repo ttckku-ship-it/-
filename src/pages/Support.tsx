@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { HeartHandshake, Phone, MessageCircle, Calendar, Building2, ExternalLink, User, Clock, Star, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 const clinics = [
   {
     name: "عيادة سند",
@@ -46,19 +48,46 @@ export default function Support() {
   const [selectedClinic, setSelectedClinic] = useState<typeof clinics[0] | null>(null);
   const [bookingDoctor, setBookingDoctor] = useState<{ doctor: typeof clinics[0]["doctors"][0]; clinic: string; time: string } | null>(null);
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
-
+const navigate = useNavigate();
+const { caseId } = useAuth();
   const handleBook = (doctor: typeof clinics[0]["doctors"][0], clinicName: string, time: string) => {
     setBookingDoctor({ doctor, clinic: clinicName, time });
     setBookingConfirmed(false);
   };
 
-  const confirmBooking = () => {
-    setBookingConfirmed(true);
-    setTimeout(() => {
-      setBookingDoctor(null);
-      setBookingConfirmed(false);
-    }, 2000);
-  };
+const confirmBooking = async () => {
+  if (!bookingDoctor) return;
+
+  const { data: userCase } = await supabase
+    .from("cases")
+    .select("id")
+    .eq("case_id", caseId)
+    .single();
+
+  if (!userCase) return;
+
+  const { error } = await supabase
+    .from("bookings")
+    .insert({
+      case_id: userCase.id,
+      clinic_name: bookingDoctor.clinic,
+      doctor_name: bookingDoctor.doctor.name,
+      specialty: bookingDoctor.doctor.specialty,
+      appointment_time: bookingDoctor.time,
+    });
+
+  if (error) {
+    alert("حدث خطأ أثناء الحجز");
+    return;
+  }
+
+  setBookingConfirmed(true);
+
+  setTimeout(() => {
+    setBookingDoctor(null);
+    setBookingConfirmed(false);
+  }, 2000);
+};
 
   return (
     <div className="space-y-6">
@@ -153,31 +182,9 @@ export default function Support() {
         </DialogContent>
       </Dialog>
 
-      {/* Consultation options */}
-      <div className="bg-card rounded-xl border p-6" style={{ boxShadow: "var(--shadow-card)" }}>
-        <h3 className="text-lg font-bold text-card-foreground mb-4">طرق الاستشارة</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Button variant="outline" className="h-auto py-4 flex-col gap-2">
-            <MessageCircle className="w-6 h-6 text-primary" />
-            <span>محادثة نصية</span>
-            <span className="text-xs text-muted-foreground">متاح الآن</span>
-          </Button>
-          <Button variant="outline" className="h-auto py-4 flex-col gap-2">
-            <Phone className="w-6 h-6 text-secondary" />
-            <span>مكالمة صوتية</span>
-            <span className="text-xs text-muted-foreground">حجز مسبق</span>
-          </Button>
-          <Button variant="outline" className="h-auto py-4 flex-col gap-2">
-            <Calendar className="w-6 h-6 text-primary" />
-            <span>حجز جلسة</span>
-            <span className="text-xs text-muted-foreground">اختر الموعد</span>
-          </Button>
-        </div>
-      </div>
-
       {/* Programs */}
       <div className="bg-card rounded-xl border p-6" style={{ boxShadow: "var(--shadow-card)" }}>
-        <h3 className="text-lg font-bold text-card-foreground mb-4">البرامج المتاحة</h3>
+        <h3 className="text-lg font-bold text-card-foreground mb-4">برامجنا تقدم لك</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {programs.map((prog) => (
             <div key={prog} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
@@ -192,9 +199,13 @@ export default function Support() {
       <div className="bg-card rounded-xl border p-6" style={{ boxShadow: "var(--shadow-card)" }}>
         <h3 className="text-lg font-bold text-card-foreground mb-2">استبيان الحالة النفسية</h3>
         <p className="text-sm text-muted-foreground mb-4">تقييم سريع وسري لمستوى الاحتراق الوظيفي والضغط النفسي</p>
-        <Button variant="hero" className="gap-2">
-          بدء الاستبيان
-        </Button>
+        <Button
+  variant="hero"
+  className="gap-2"
+  onClick={() => navigate("/assessment")}
+>
+  بدء الاستبيان
+</Button>
       </div>
     </div>
   );

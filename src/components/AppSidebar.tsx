@@ -10,6 +10,7 @@ import {
   LogOut,
   Menu,
   X,
+  Calendar,
   Briefcase,
   Shield,
 } from "lucide-react";
@@ -19,11 +20,14 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "لوحة التحكم", path: "/dashboard", icon: LayoutDashboard },
-  { label: "الترقيات", path: "/promotions", icon: TrendingUp },
-    { label: "المستشار المهني", path: "/CareerAdvisor", icon: Briefcase },
+{ label: "المستشار المهني", path: "/career-advisor", icon: Briefcase },
   { label: "الدعم النفسي", path: "/support", icon: HeartHandshake },
-  { label: "التعافي", path: "/recovery", icon: ShieldCheck },
   { label: "التحليلات", path: "/ai-insights", icon: BarChart3 },
+  {
+  label: "حجوزاتي",
+  path: "/my-bookings",
+  icon: Calendar,
+},
   { label: "الإعدادات", path: "/settings", icon: Settings },
 ];
 

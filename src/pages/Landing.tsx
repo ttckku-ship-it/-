@@ -67,23 +67,25 @@ export default function Landing() {
       {/* Info Sections */}
       <section className="container py-16 px-4 grid md:grid-cols-2 gap-6">
 
-        {/* Employees */}
-        <div className="bg-card border rounded-xl p-6 shadow-sm">
-          <h2 className="text-xl font-bold mb-3">👨‍💼 الموظفين</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            يقدم النظام أدوات لتحليل الأداء الوظيفي، متابعة مستوى الاحتراق الوظيفي،
-            تقديم الدعم النفسي، وخدمات التطوير المهني والترقيات.
-          </p>
-        </div>
+{/* Vision */}
+<div className="bg-card border rounded-xl p-6 shadow-sm">
+  <h2 className="text-xl font-bold mb-3">🎯 رؤيتنا</h2>
+  <p className="text-sm text-muted-foreground leading-relaxed">
+    أن تكون حصين كلينك منصة رائدة في تعزيز الصحة النفسية والوقاية من الاحتراق
+    الوظيفي من خلال حلول رقمية ذكية تساهم في تحسين جودة الحياة ودعم اتخاذ
+    القرارات الصحية والمهنية.
+  </p>
+</div>
 
-        {/* Students */}
-        <div className="bg-card border rounded-xl p-6 shadow-sm">
-          <h2 className="text-xl font-bold mb-3">🎓 الطلاب</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            منصة دعم متكاملة للطلاب تشمل المشاكل الأكاديمية، الضغوط الدراسية،
-            الإرشاد النفسي، وتوجيههم لمسارات تعليمية ومهنية أفضل.
-          </p>
-        </div>
+{/* Mission */}
+<div className="bg-card border rounded-xl p-6 shadow-sm">
+  <h2 className="text-xl font-bold mb-3">🚀 رسالتنا</h2>
+  <p className="text-sm text-muted-foreground leading-relaxed">
+    توفير بيئة رقمية آمنة وسهلة الاستخدام تساعد المستفيدين على تقييم حالتهم
+    النفسية، الحصول على الدعم المناسب، متابعة تطورهم بشكل مستمر، والاستفادة من
+    خدمات الإرشاد النفسي والمهني مع الحفاظ الكامل على خصوصية بياناتهم.
+  </p>
+</div>
 
       </section>
 

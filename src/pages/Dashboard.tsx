@@ -12,10 +12,9 @@ import {
   BarChart3,
   ClipboardList,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
-const burnoutScore = 42;
-const riskLevel = "متوسط";
-const status: string = "ضغط";
 
 const quickActions = [
   { label: "بدء تقييم", icon: ClipboardList, path: "/support" },
@@ -26,21 +25,47 @@ const quickActions = [
 ];
 
 const overviewCards = [
-  { label: "الترقيات", desc: "تقييم الجاهزية", icon: TrendingUp, path: "/promotions", color: "bg-primary/10 text-primary" },
-  { label: "الدعم النفسي", desc: "استشارات ودعم", icon: HeartHandshake, path: "/support", color: "bg-secondary/10 text-secondary" },
-  { label: "التعافي", desc: "برامج إعادة التأهيل", icon: ShieldCheck, path: "/recovery", color: "bg-destructive/10 text-destructive" },
-   { 
-    label: "المستشار المهني", 
-    desc: "تقييم المسار الوظيفي", 
-    icon: Briefcase, 
-    path: "/CareerAdvisor", 
-    color: "bg-accent/10 text-accent" 
+  {
+    label: "الدعم النفسي",
+    desc: "استشارات ودعم",
+    icon: HeartHandshake,
+    path: "/support",
+    color: "bg-secondary/10 text-secondary",
+  },
+  {
+    label: "المستشار المهني",
+    desc: "تقييم المسار الوظيفي",
+    icon: Briefcase,
+    path: "/career-advisor",
+    color: "bg-accent/10 text-accent",
   },
 ];
-
 export default function Dashboard() {
   const { caseId } = useAuth();
   const navigate = useNavigate();
+const [burnoutScore, setBurnoutScore] = useState(0);
+const [riskLevel, setRiskLevel] = useState("");
+const [status, setStatus] = useState("");
+
+useEffect(() => {
+  const loadDashboard = async () => {
+    const { data, error } = await supabase
+      .from("cases")
+      .select("burnout_score, risk_level, status")
+      .eq("case_id", caseId)
+      .single();
+
+    if (error || !data) return;
+
+    setBurnoutScore(data.burnout_score);
+    setRiskLevel(data.risk_level);
+    setStatus(data.status);
+  };
+
+  if (caseId) {
+    loadDashboard();
+  }
+}, [caseId]);
 
   const getScoreColor = () => {
     if (burnoutScore < 30) return "text-success";
@@ -129,25 +154,6 @@ export default function Dashboard() {
             <p className="text-sm text-muted-foreground">{card.desc}</p>
           </button>
         ))}
-      </div>
-
-      {/* Last recommendations */}
-      <div className="bg-card rounded-xl border p-5" style={{ boxShadow: "var(--shadow-card)" }}>
-        <h3 className="text-lg font-bold text-card-foreground mb-4">آخر التوصيات</h3>
-        <ul className="space-y-3">
-          <li className="flex items-start gap-3 text-sm">
-            <CheckCircle2 className="w-4 h-4 text-secondary mt-0.5 shrink-0" />
-            <span className="text-muted-foreground">يُنصح بممارسة تمارين الاسترخاء لمدة 15 دقيقة يومياً</span>
-          </li>
-          <li className="flex items-start gap-3 text-sm">
-            <CheckCircle2 className="w-4 h-4 text-secondary mt-0.5 shrink-0" />
-            <span className="text-muted-foreground">جدولة استشارة مع أخصائي الدعم النفسي خلال الأسبوع القادم</span>
-          </li>
-          <li className="flex items-start gap-3 text-sm">
-            <CheckCircle2 className="w-4 h-4 text-secondary mt-0.5 shrink-0" />
-            <span className="text-muted-foreground">إكمال اختبار القدرة المعرفية لتقييم الجاهزية للترقية</span>
-          </li>
-        </ul>
       </div>
     </div>
   );

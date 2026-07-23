@@ -9,9 +9,7 @@ import AppSidebar from "@/components/AppSidebar";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Promotions from "./pages/Promotions";
 import Support from "./pages/Support";
-import Recovery from "./pages/Recovery";
 import AiInsights from "./pages/AiInsights";
 import SettingsPage from "./pages/Settings";
 import NotFound from "./pages/NotFound";
@@ -22,7 +20,9 @@ import StudentDashboard from "./pages/StudentDashboard";
 import StudentCases from "./pages/StudentCases";
 import StudentAdvisor from "./pages/StudentAdvisor";
 import StudentInsights from "./pages/StudentInsights";
-
+import Assessment from "./pages/Assessment";
+import MyBookings from "./pages/MyBookings";
+import Register from "./pages/Register";
 const queryClient = new QueryClient();
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
@@ -52,13 +52,25 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<ProtectedLayout><Dashboard /></ProtectedLayout>} />
-            <Route path="/promotions" element={<ProtectedLayout><Promotions /></ProtectedLayout>} />
             <Route path="/support" element={<ProtectedLayout><Support /></ProtectedLayout>} />
-            <Route path="/recovery" element={<ProtectedLayout><Recovery /></ProtectedLayout>} />
+            <Route
+  path="/assessment"
+  element={
+    <ProtectedLayout>
+      <Assessment />
+    </ProtectedLayout>
+  }
+/>
             <Route path="/ai-insights" element={<ProtectedLayout><AiInsights /></ProtectedLayout>} />
             <Route path="/settings" element={<ProtectedLayout><SettingsPage /></ProtectedLayout>} />
-            <Route path="/CareerAdvisor" element={<ProtectedLayout><CareerAdvisor /></ProtectedLayout>} />
-            <Route path="*" element={<NotFound />} />
+<Route
+  path="/career-advisor"
+  element={
+    <ProtectedLayout>
+      <CareerAdvisor />
+    </ProtectedLayout>
+  }
+/>            <Route path="*" element={<NotFound />} />
             <Route
   path="/student-support"
   element={
@@ -74,6 +86,15 @@ const App = () => (
     <StudentLayout>
       <StudentDashboard />
     </StudentLayout>
+  }
+/>
+
+<Route
+  path="/my-bookings"
+  element={
+    <ProtectedLayout>
+      <MyBookings />
+    </ProtectedLayout>
   }
 />
 
@@ -103,6 +124,7 @@ const App = () => (
     </StudentLayout>
   }
 />
+<Route path="/register" element={<Register />} />
                        </Routes>
         </BrowserRouter>
       </AuthProvider>

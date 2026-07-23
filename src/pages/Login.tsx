@@ -4,42 +4,51 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft } from "lucide-react";
+import { supabase } from "../lib/supabase";
 
 export default function Login() {
   const [role, setRole] = useState<"employee" | "student">("employee");
-  const [caseId, setCaseId] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (!caseId.trim()) {
-      setError("يرجى إدخال معرّف الحالة");
-      return;
-    }
-
-    if (caseId.trim().length < 4) {
-      setError("معرّف الحالة يجب أن يكون 4 أحرف على الأقل");
+    if (!email || !password) {
+      setError("يرجى إدخال البريد الإلكتروني وكلمة المرور");
       return;
     }
 
     setLoading(true);
 
-    // Simulate verification
-    setTimeout(() => {
-      login(caseId.trim(), role);
+    const { data, error } = await supabase
+      .from("cases")
+      .select("*")
+      .eq("email", email)
+      .eq("password", password)
+      .single();
 
-      if (role === "student") {
-        navigate("/student-dashboard");
-      } else {
-        navigate("/dashboard");
-      }
-    }, 800);
+    setLoading(false);
+
+    if (error || !data) {
+      setError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+      return;
+    }
+
+    // يبقى المشروع يعتمد على case_id
+    login(data.case_id, role);
+
+    if (role === "student") {
+      navigate("/student-dashboard");
+    } else {
+      navigate("/dashboard");
+    }
   };
 
   return (
@@ -48,7 +57,7 @@ export default function Login() {
       style={{ background: "var(--gradient-hero)" }}
     >
       <div className="bg-card rounded-2xl p-8 w-full max-w-md shadow-2xl animate-fade-in">
-        
+
         {/* Logo + Title */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
@@ -64,61 +73,45 @@ export default function Login() {
           </h1>
 
           <p className="text-sm text-muted-foreground mt-2">
-            اختر نوع المستخدم ثم أدخل معرّف الحالة
+            اختر نوع المستخدم ثم أدخل البريد الإلكتروني وكلمة المرور
           </p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
 
-          {/* Role Selection */}
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setRole("employee")}
-              className={`flex-1 p-2 rounded-lg border text-sm transition ${
-                role === "employee"
-                  ? "bg-primary text-white"
-                  : "bg-muted text-muted-foreground"
-              }`}
-            >
-              👨‍💼 موظف
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setRole("student")}
-              className={`flex-1 p-2 rounded-lg border text-sm transition ${
-                role === "student"
-                  ? "bg-primary text-white"
-                  : "bg-muted text-muted-foreground"
-              }`}
-            >
-              🎓 طالب
-            </button>
-          </div>
-
-          {/* Case ID */}
+          {/* البريد الإلكتروني */}
           <div>
             <label className="block text-sm font-medium text-card-foreground mb-2">
-              معرّف الحالة (Case ID)
+              البريد الإلكتروني
             </label>
 
             <Input
-              type="text"
-              value={caseId}
-              onChange={(e) => setCaseId(e.target.value)}
-              placeholder="أدخل معرّف الحالة"
-              className="text-center text-lg tracking-widest"
-              dir="ltr"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="example@email.com"
             />
-
-            {error && (
-              <p className="text-destructive text-sm mt-2">{error}</p>
-            )}
           </div>
 
-          {/* Submit */}
+          {/* كلمة المرور */}
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-2">
+              كلمة المرور
+            </label>
+
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="********"
+            />
+          </div>
+
+          {error && (
+            <p className="text-destructive text-sm">{error}</p>
+          )}
+
           <Button
             type="submit"
             className="w-full"
@@ -127,6 +120,7 @@ export default function Login() {
           >
             {loading ? "جاري التحقق..." : "دخول"}
           </Button>
+
         </form>
 
         {/* Security Note */}
@@ -136,7 +130,7 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Back */}
+        {/* العودة */}
         <button
           onClick={() => navigate("/")}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mt-6 mx-auto transition-colors"
@@ -144,6 +138,7 @@ export default function Login() {
           <ArrowLeft className="w-4 h-4" />
           العودة للرئيسية
         </button>
+
       </div>
     </div>
   );
